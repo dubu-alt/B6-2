@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}글 목록 - 공부 기록 블로그{% endblock %}
+{% block content %}
+<style>
+  .search { display: flex; gap: 8px; margin: 16px 0; }
+  .search input { flex: 1; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 1rem; }
+  .categories { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+  .post { padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .post h2 { font-size: 1.2rem; margin: 6px 0; }
+  .post h2 a { color: var(--text); }
+  .post p { margin: 0 0 6px; color: #555; }
+</style>
+
+<h1>글 목록</h1>
+
+<form class="search" method="get" action="/posts">
+  <input type="search" name="q" value="{{ q }}" placeholder="제목이나 내용으로 검색" aria-label="검색어">
+  {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+  <button class="btn" type="submit">검색</button>
+</form>
+
+<div class="categories">
+  <a class="tag {% if not category %}active{% endif %}" href="/posts{% if q %}?q={{ q | urlencode }}{% endif %}">전체</a>
+  {% for c in categories %}
+  <a class="tag {% if c == category %}active{% endif %}"
+     href="/posts?category={{ c | urlencode }}{% if q %}&q={{ q | urlencode }}{% endif %}">{{ c }}</a>
+  {% endfor %}
+</div>
+
+{% for post in posts %}
+<article class="post">
+  <span class="tag">{{ post.category }}</span>
+  <h2><a href="/posts/{{ post.id }}">{{ post.title }}</a></h2>
+  <p>{{ post.content | truncate(80) }}</p>
+  <span class="muted">{{ post.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+  · <a href="/posts/{{ post.id }}">상세보기</a>
+</article>
+{% else %}
+<p class="muted">{% if q or category %}조건에 맞는 글이 없습니다.{% else %}아직 작성한 글이 없습니다. 첫 공부 기록을 남겨 보세요!{% endif %}</p>
+{% endfor %}
+
+<div class="actions"><a class="btn btn-primary" href="/posts/new">새 글 쓰기</a></div>
+{% endblock %}

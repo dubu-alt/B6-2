@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% set is_edit = form.id is defined %}
+{% block title %}{{ "글 수정" if is_edit else "새 글 쓰기" }} - 공부 기록 블로그{% endblock %}
+{% block content %}
+<style>
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line);
+                                  border-radius: 6px; font: inherit; }
+  .field textarea { min-height: 320px; resize: vertical; }
+  .field.has-error input, .field.has-error textarea { border-color: var(--error); }
+  .error { color: var(--error); font-size: .9rem; margin: 4px 0 0; }
+  .notice { padding: 12px 16px; border-radius: 6px; background: #fdecea; color: var(--error); margin-bottom: 20px; }
+</style>
+
+<h1>{{ "글 수정" if is_edit else "새 글 쓰기" }}</h1>
+
+{% if errors %}<div class="notice" role="alert">입력 내용을 확인해 주세요.</div>{% endif %}
+
+<form method="post" action="{{ action }}">
+  <div class="field {% if errors.title %}has-error{% endif %}">
+    <label for="title">제목 *</label>
+    <input id="title" name="title" maxlength="100" value="{{ form.title or '' }}" placeholder="오늘 공부한 주제">
+    {% if errors.title %}<p class="error">{{ errors.title }}</p>{% endif %}
+  </div>
+
+  <div class="field {% if errors.category %}has-error{% endif %}">
+    <label for="category">카테고리</label>
+    <input id="category" name="category" maxlength="30" list="category-list"
+           value="{{ form.category or '' }}" placeholder="예: Python, Git (비우면 '기타')">
+    <datalist id="category-list">{% for c in categories %}<option value="{{ c }}">{% endfor %}</datalist>
+    {% if errors.category %}<p class="error">{{ errors.category }}</p>{% endif %}
+  </div>
+
+  <div class="field {% if errors.content %}has-error{% endif %}">
+    <label for="content">내용 *</label>
+    <textarea id="content" name="content" placeholder="배운 내용, 헷갈렸던 점, 다음에 할 것">{{ form.content or '' }}</textarea>
+    {% if errors.content %}<p class="error">{{ errors.content }}</p>{% endif %}
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" type="submit">저장</button>
+    <a class="btn" href="/posts">취소</a>
+  </div>
+</form>
+{% endblock %}
