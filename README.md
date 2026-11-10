@@ -90,10 +90,21 @@ B6-2/
 │   │   ├── home_router.py      # GET /
 │   │   └── post_router.py      # /posts 요청/응답, 리다이렉트
 │   └── templates/              # base, home, list, detail, form, not_found
-├── docs/screenshots/           # 주요 화면 스크린샷
+├── docs/
+│   ├── architecture.svg        # 전체 구조 그림
+│   └── screenshots/            # 주요 화면 스크린샷
 ├── requirements.txt
 └── README.md
 ```
+
+## 전체 구조
+
+![서버 안과 바깥의 요청 흐름](docs/architecture.svg)
+
+- **서버 바깥**: 브라우저와 서버는 HTTP 요청·응답만 주고받습니다.
+- **서버 안**: 요청은 `routers → services → repositories → database.db` 순서로 내려갔다가 다시 올라옵니다. (청록색: 요청이 지나가는 층)
+- 각 층은 옆의 도구를 가져다 씁니다. (회색) 라우터는 `templates/`로 HTML을 만들고, 서비스는 `schemas/`(DTO)로 데이터를 포장하며, 저장소는 `models/`(테이블 설계도)로 DB를 다룹니다.
+- 브라우저와 맞닿은 층은 라우터뿐이므로 `Request`, `Form`, `RedirectResponse`, `TemplateResponse`는 `routers/`에만 있습니다.
 
 ## 요청 흐름 (글 등록 예시)
 
